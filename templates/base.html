@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Warehouse Inspection System{% endblock %}</title>
+    {% load static %}
+    {% load django_vite %}
+    
+    <!-- Tailwind CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Alpine.js -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Konva.js -->
+    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+    
+    <script>
+        // Alpine.js global store
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('app', {
+                sidebarOpen: true,
+                currentView: '{% block current_view %}dashboard{% endblock %}',
+                toggleSidebar() {
+                    this.sidebarOpen = !this.sidebarOpen;
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-neutral-50 font-inter" x-data>
+    
+    {% include 'components/header.html' %}
+    
+    <div class="flex pt-16">
+        {% include 'components/sidebar.html' %}
+        
+        <!-- Main Content -->
+        <main :class="$store.app.sidebarOpen ? 'ml-64' : 'ml-16'" class="flex-1 transition-all duration-300">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <!-- Messages -->
+    {% if messages %}
+        <div id="messages" class="fixed top-20 right-4 z-50 space-y-2">
+            {% for message in messages %}
+                <div class="bg-white border-l-4 {% if message.tags == 'success' %}border-success{% elif message.tags == 'error' %}border-danger{% else %}border-primary{% endif %} rounded-lg shadow-lg p-4 max-w-md"
+                     x-data="{ show: true }" 
+                     x-show="show" 
+                     x-init="setTimeout(() => show = false, 5000)">
+                    <div class="flex items-center">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle text-success{% elif message.tags == 'error' %}fa-exclamation-circle text-danger{% else %}fa-info-circle text-primary{% endif %} mr-2"></i>
+                        <p class="text-sm text-neutral-900">{{ message }}</p>
+                        <button @click="show = false" class="ml-auto text-neutral-400 hover:text-neutral-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% block extra_js %}{% endblock %}
+    
+    <script src="{% static 'js/alpine-extensions.js' %}"></script>
+</body>
+</html>

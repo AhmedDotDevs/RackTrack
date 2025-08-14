@@ -1,0 +1,72 @@
+<!-- Layout editor content for HTMX partial updates -->
+<div class="space-y-6">
+    <!-- Canvas Container -->
+    <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+        <div class="p-4 border-b border-neutral-200 bg-neutral-50">
+            <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-neutral-900" data-testid="text-canvas-title">Warehouse Layout Canvas</h3>
+                <div class="flex items-center space-x-2 text-sm text-neutral-600">
+                    <span>Zoom:</span>
+                    <button id="zoom-out-btn" class="px-2 py-1 bg-white rounded border hover:bg-neutral-50" data-testid="button-zoom-out">-</button>
+                    <span id="zoom-level" class="px-2" data-testid="text-zoom-level">100%</span>
+                    <button id="zoom-in-btn" class="px-2 py-1 bg-white rounded border hover:bg-neutral-50" data-testid="button-zoom-in">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="relative" style="height: 600px;" data-layout-id="{{ active_layout.id }}">
+            <div id="canvas-container" class="w-full h-full canvas-container" data-testid="canvas-container"></div>
+        </div>
+    </div>
+
+    <!-- Component Properties Panel -->
+    <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" id="properties-panel" style="display: none;">
+        <h3 class="text-lg font-semibold text-neutral-900 mb-4" data-testid="text-properties-title">Component Properties</h3>
+        <form id="component-form">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Component ID</label>
+                    <input type="text" id="component-id" class="form-input" placeholder="RK-A1-B1" data-testid="input-component-id">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Type</label>
+                    <select id="component-type" class="form-select" data-testid="select-component-type">
+                        <option value="rack">Rack</option>
+                        <option value="beam">Beam</option>
+                        <option value="upright">Upright</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Status</label>
+                    <select id="component-status" class="form-select" data-testid="select-component-status">
+                        <option value="good">Good</option>
+                        <option value="monitor">Monitor</option>
+                        <option value="fix_4_weeks">Fix Within 4 Weeks</option>
+                        <option value="immediate">Immediate Threat</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end space-x-3">
+                <button type="button" id="delete-component-btn" class="px-4 py-2 bg-danger text-white rounded-lg hover:bg-danger/90 transition-colors" data-testid="button-delete-component">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-testid="button-update-component">
+                    <i class="fas fa-save mr-2"></i>Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Pass component data to the layout editor
+    window.initialComponents = {{ components|safe }};
+    
+    // Initialize layout editor if not already initialized
+    if (!window.layoutEditor && document.getElementById('canvas-container')) {
+        window.layoutEditor = new WarehouseLayoutEditor('canvas-container');
+        if (window.initialComponents && window.initialComponents.length > 0) {
+            window.layoutEditor.loadComponents(window.initialComponents);
+        }
+    }
+</script>

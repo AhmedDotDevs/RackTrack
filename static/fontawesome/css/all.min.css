@@ -1,0 +1,123 @@
+/* Font Awesome Free 6.4.0 - Minimal local version for Warehouse Inspection System */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('../webfonts/fa-regular-400.woff2') format('woff2'),
+       url('../webfonts/fa-regular-400.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url('../webfonts/fa-solid-900.woff2') format('woff2'),
+       url('../webfonts/fa-solid-900.woff') format('woff');
+}
+
+.fa, .fas, .far {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  line-height: 1;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.far {
+  font-weight: 400;
+}
+
+/* Core icons used in the application */
+.fa-bars:before { content: "\f0c9"; }
+.fa-tachometer-alt:before { content: "\f3fd"; }
+.fa-warehouse:before { content: "\f494"; }
+.fa-clipboard-check:before { content: "\f46c"; }
+.fa-file-pdf:before { content: "\f1c1"; }
+.fa-users:before { content: "\f0c0"; }
+.fa-cog:before { content: "\f013"; }
+.fa-exclamation-triangle:before { content: "\f071"; }
+.fa-clock:before { content: "\f017"; }
+.fa-eye:before { content: "\f06e"; }
+.fa-check-circle:before { content: "\f058"; }
+.fa-plus:before { content: "\f067"; }
+.fa-grip-lines:before { content: "\f7a4"; }
+.fa-upload:before { content: "\f093"; }
+.fa-download:before { content: "\f019"; }
+.fa-save:before { content: "\f0c7"; }
+.fa-camera:before { content: "\f030"; }
+.fa-trash:before { content: "\f1f8"; }
+.fa-edit:before { content: "\f044"; }
+.fa-chevron-down:before { content: "\f078"; }
+.fa-chevron-up:before { content: "\f077"; }
+.fa-times:before { content: "\f00d"; }
+.fa-info-circle:before { content: "\f05a"; }
+.fa-exclamation-circle:before { content: "\f06a"; }
+.fa-mouse-pointer:before { content: "\f245"; }
+
+/* Utility classes */
+.fa-xs { font-size: 0.75em; }
+.fa-sm { font-size: 0.875em; }
+.fa-lg { font-size: 1.25em; }
+.fa-xl { font-size: 1.5em; }
+.fa-2x { font-size: 2em; }
+.fa-3x { font-size: 3em; }
+.fa-4x { font-size: 4em; }
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  animation: fa-pulse 1s infinite steps(8);
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Text and background color utilities */
+.text-primary { color: #1565C0; }
+.text-secondary { color: #37474F; }
+.text-success { color: #2E7D32; }
+.text-warning { color: #F57F17; }
+.text-danger { color: #C62828; }
+
+/* Additional spacing and layout utilities */
+.mr-1 { margin-right: 0.25rem; }
+.mr-2 { margin-right: 0.5rem; }
+.mr-3 { margin-right: 0.75rem; }
+.ml-1 { margin-left: 0.25rem; }
+.ml-2 { margin-left: 0.5rem; }
+.ml-3 { margin-left: 0.75rem; }
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .fa-lg { font-size: 1.125em; }
+  .fa-xl { font-size: 1.25em; }
+  .fa-2x { font-size: 1.5em; }
+}

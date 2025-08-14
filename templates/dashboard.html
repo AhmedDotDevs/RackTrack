@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Warehouse Inspection System{% endblock %}
+{% block current_view %}dashboard{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-neutral-900 mb-2" data-testid="text-page-title">Dashboard Overview</h2>
+        <p class="text-neutral-600" data-testid="text-page-description">Monitor warehouse inspection status and urgent items</p>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" data-testid="card-immediate-threats">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-danger/10 rounded-lg">
+                    <i class="fas fa-exclamation-triangle text-danger text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-danger" data-testid="text-immediate-count">{{ immediate_threats }}</span>
+            </div>
+            <h3 class="font-semibold text-neutral-900 mb-1">Immediate Threats</h3>
+            <p class="text-sm text-neutral-600">Fix now</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" data-testid="card-fix-4-weeks">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-warning/10 rounded-lg">
+                    <i class="fas fa-clock text-warning text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-warning" data-testid="text-amber-count">{{ fix_4_weeks }}</span>
+            </div>
+            <h3 class="font-semibold text-neutral-900 mb-1">Fix Within 4 Weeks</h3>
+            <p class="text-sm text-neutral-600">Amber status</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" data-testid="card-monitor-only">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-success/10 rounded-lg">
+                    <i class="fas fa-eye text-success text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-success" data-testid="text-green-count">{{ monitor_only }}</span>
+            </div>
+            <h3 class="font-semibold text-neutral-900 mb-1">Monitor Only</h3>
+            <p class="text-sm text-neutral-600">Green status</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6" data-testid="card-total-components">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-primary/10 rounded-lg">
+                    <i class="fas fa-check-circle text-primary text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-primary" data-testid="text-total-count">{{ total_components }}</span>
+            </div>
+            <h3 class="font-semibold text-neutral-900 mb-1">Total Components</h3>
+            <p class="text-sm text-neutral-600">Last inspected</p>
+        </div>
+    </div>
+
+    <!-- Urgent Items Table -->
+    <div class="bg-white rounded-lg shadow-sm border border-neutral-200 mb-8">
+        <div class="px-6 py-4 border-b border-neutral-200">
+            <h3 class="text-lg font-semibold text-neutral-900" data-testid="text-urgent-items-title">Urgent Items Requiring Attention</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full" data-testid="table-urgent-items">
+                <thead class="bg-neutral-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Component ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Defect</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Severity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Due Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-neutral-200">
+                    {% for inspection in urgent_inspections %}
+                    <tr data-testid="row-urgent-{{ inspection.component.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900" data-testid="text-component-id-{{ inspection.component.id }}">{{ inspection.component.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-testid="text-component-type-{{ inspection.component.id }}">{{ inspection.component.get_component_type_display }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-testid="text-defect-{{ inspection.component.id }}">
+                            {% if inspection.defect_type == 'custom' %}{{ inspection.custom_defect }}{% else %}{{ inspection.get_defect_type_display }}{% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if inspection.severity == 'red' %}bg-danger text-white
+                                {% elif inspection.severity == 'amber' %}bg-warning text-white
+                                {% else %}bg-success text-white{% endif %}" 
+                                data-testid="badge-severity-{{ inspection.component.id }}">
+                                {% if inspection.severity == 'red' %}Immediate
+                                {% elif inspection.severity == 'amber' %}4 Weeks
+                                {% else %}Monitor{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm {% if inspection.is_overdue %}text-danger font-medium{% else %}text-neutral-500{% endif %}" data-testid="text-due-date-{{ inspection.component.id }}">
+                            {% if inspection.is_overdue %}Overdue{% elif inspection.due_date %}{{ inspection.due_date }}{% else %}-{% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                            <a href="{% url 'inspection' %}?component={{ inspection.component.id }}" class="text-primary hover:text-primary/80 font-medium" data-testid="link-view-details-{{ inspection.component.id }}">View Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-sm text-neutral-500" data-testid="text-no-urgent-items">
+                            No urgent items found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-sm border border-neutral-200">
+        <div class="px-6 py-4 border-b border-neutral-200">
+            <h3 class="text-lg font-semibold text-neutral-900" data-testid="text-recent-activity-title">Recent Inspection Activity</h3>
+        </div>
+        <div class="p-6 space-y-4" data-testid="list-recent-activity">
+            {% for activity in recent_activity %}
+            <div class="flex items-start space-x-3" data-testid="item-activity-{{ activity.component.id }}">
+                <div class="w-2 h-2 {% if activity.severity == 'red' %}bg-danger{% elif activity.severity == 'amber' %}bg-warning{% else %}bg-success{% endif %} rounded-full mt-2"></div>
+                <div>
+                    <p class="text-sm text-neutral-900 font-medium" data-testid="text-activity-description-{{ activity.component.id }}">
+                        {{ activity.component.id }} - 
+                        {% if activity.defect_type == 'custom' %}{{ activity.custom_defect }}{% else %}{{ activity.get_defect_type_display }}{% endif %}
+                    </p>
+                    <p class="text-xs text-neutral-500" data-testid="text-activity-meta-{{ activity.component.id }}">
+                        Inspector: {{ activity.inspector.get_full_name|default:activity.inspector.username }} • {{ activity.inspection_date|timesince }} ago
+                    </p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-sm text-neutral-500" data-testid="text-no-recent-activity">No recent activity</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set current view for sidebar highlighting
+    Alpine.store('app').currentView = 'dashboard';
+</script>
+{% endblock %}
