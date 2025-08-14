@@ -35,13 +35,6 @@ export default function LayoutEditor() {
   const [selectedComponent, setSelectedComponent] = useState<WarehouseComponent | null>(null);
   const [activeLayoutId, setActiveLayoutId] = useState<string | null>(null);
 
-  // Set active layout when layouts are loaded
-  useEffect(() => {
-    if (layouts && Array.isArray(layouts) && layouts.length > 0 && !activeLayoutId) {
-      setActiveLayoutId(layouts[0].id);
-    }
-  }, [layouts, activeLayoutId]);
-
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -57,12 +50,19 @@ export default function LayoutEditor() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: layouts } = useQuery({
+  const { data: layouts = [] } = useQuery<WarehouseLayout[]>({
     queryKey: ["/api/layouts"],
     enabled: isAuthenticated,
   });
 
-  const { data: components } = useQuery({
+  // Set active layout when layouts are loaded
+  useEffect(() => {
+    if (layouts && Array.isArray(layouts) && layouts.length > 0 && !activeLayoutId) {
+      setActiveLayoutId(layouts[0].id);
+    }
+  }, [layouts, activeLayoutId]);
+
+  const { data: components = [] } = useQuery<WarehouseComponent[]>({
     queryKey: ["/api/layouts", activeLayoutId || 'default', "components"],
     enabled: isAuthenticated,
     retry: 1,
@@ -144,10 +144,17 @@ export default function LayoutEditor() {
     window.open(`/api/layouts/${activeLayoutId}/export-csv`, '_blank');
   };
 
-  const addComponent = (type: 'rack' | 'beam' | 'upright') => {
-    if (!activeLayoutId) return;
+  const addComponent = async (type: 'rack' | 'beam' | 'upright') => {
+    if (!activeLayoutId) {
+      toast({
+        title: "Error",
+        description: "Please select a layout first",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    const newComponent: WarehouseComponent = {
+    const newComponent = {
       id: `${type.toUpperCase()}-${Date.now()}`,
       layoutId: activeLayoutId,
       componentType: type,
@@ -155,16 +162,30 @@ export default function LayoutEditor() {
       yPosition: 100 + Math.random() * 200,
       width: type === 'rack' ? 200 : type === 'beam' ? 160 : 20,
       height: type === 'rack' ? 300 : type === 'beam' ? 20 : 300,
-      status: 'good',
+      status: 'good' as const,
     };
 
-    const currentComponents = components || [];
-    const updatedComponents = [...currentComponents, newComponent];
-    
-    queryClient.setQueryData(
-      ["/api/layouts", activeLayoutId, "components"],
-      updatedComponents
-    );
+    try {
+      // Create component via API
+      await apiRequest("POST", "/api/components", newComponent);
+      
+      // Refresh the components list
+      queryClient.invalidateQueries({
+        queryKey: ["/api/layouts", activeLayoutId, "components"]
+      });
+      
+      toast({
+        title: "Success",
+        description: `${type.charAt(0).toUpperCase() + type.slice(1)} added successfully`,
+      });
+    } catch (error) {
+      console.error("Error adding component:", error);
+      toast({
+        title: "Error", 
+        description: `Failed to add ${type}`,
+        variant: "destructive",
+      });
+    }
   };
 
   // Set first layout as active if none selected

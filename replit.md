@@ -10,13 +10,13 @@ Preferred communication style: Simple, everyday language.
 
 # System Architecture
 
-## Hybrid Architecture Pattern
+## Modern Full-Stack Architecture
 
-The system uses a hybrid approach combining Django backend with React frontend, connected via a REST API. This pattern allows for Django's robust ORM and admin capabilities while providing a modern React-based user interface.
+The system uses a modern full-stack JavaScript architecture with Express.js backend and React frontend, providing a cohesive development experience.
 
-**Backend**: Django serves as the primary backend with PostgreSQL database, handling authentication, data processing, and PDF generation through WeasyPrint.
+**Backend**: Express.js serves as the REST API backend with PostgreSQL database, handling authentication via Replit Auth, data processing, and API endpoints.
 
-**Frontend**: React with TypeScript provides the user interface, using TanStack Query for state management and data fetching.
+**Frontend**: React with TypeScript provides the user interface, using TanStack Query for state management and data fetching, Vite for bundling.
 
 **Database**: Drizzle ORM with PostgreSQL handles data persistence, with schemas defined in TypeScript for type safety across the stack.
 
@@ -24,7 +24,7 @@ The system uses a hybrid approach combining Django backend with React frontend, 
 
 The system implements Replit Auth for user authentication, with role-based access control distinguishing between Inspector and Administrator users. User profiles extend the base authentication to include role assignments and certification details.
 
-Django Allauth provides additional authentication features including email verification and password reset capabilities.
+Express sessions with PostgreSQL storage provide secure session management and user state persistence.
 
 ## Interactive Canvas System
 
@@ -55,7 +55,7 @@ Reports can be filtered by date ranges and include various detail levels from su
 
 The system uses Vite for frontend asset bundling and optimization. Static assets including fonts (Font Awesome) and styles (Tailwind CSS) are processed locally rather than relying on CDNs for better performance and reliability.
 
-Django's static file system handles backend assets and PDF generation resources.
+Express.js serves static files and handles asset delivery through Vite in development mode.
 
 # External Dependencies
 
@@ -65,7 +65,7 @@ Django's static file system handles backend assets and PDF generation resources.
 
 ## Authentication Services  
 - **Replit Auth**: Primary authentication provider
-- **Django Allauth**: Extended authentication features (email verification, password reset)
+- **Express Sessions**: Secure session management with PostgreSQL storage
 
 ## UI & Styling Libraries
 - **Tailwind CSS v4**: Utility-first styling framework
@@ -77,7 +77,7 @@ Django's static file system handles backend assets and PDF generation resources.
 - **Vite**: Frontend build tool and asset bundling
 - **TypeScript**: Type safety across frontend and shared code
 - **TanStack Query**: Data fetching and caching for React
-- **Django**: Python web framework for backend API
+- **Express.js**: Node.js web framework for backend API
 
 ## Document Generation
 - **WeasyPrint**: Professional PDF report generation
@@ -85,7 +85,7 @@ Django's static file system handles backend assets and PDF generation resources.
 
 ## Testing & Development
 - **Jest/React Testing Library**: Frontend testing framework
-- **Django Test Framework**: Backend testing capabilities
+- **Node.js Testing**: Backend testing with standard Node.js testing frameworks
 - **Hot Module Replacement**: Development experience optimization
 
 The system is designed to be self-contained with minimal external service dependencies, focusing on reliability and performance through local asset management and robust caching strategies.

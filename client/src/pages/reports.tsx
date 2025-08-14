@@ -68,18 +68,6 @@ export default function Reports() {
   const { data: reports, isLoading: reportsLoading } = useQuery<Report[]>({
     queryKey: ["/api/reports"],
     enabled: isAuthenticated,
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    }
   });
 
   const generateReportMutation = useMutation({
@@ -91,7 +79,7 @@ export default function Reports() {
         title: "Success",
         description: "Report generation started",
       });
-      queryClient.invalidateQueries(["/api/reports"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
     },
     onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
@@ -233,13 +221,13 @@ export default function Reports() {
                       <Button
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700"
-                        disabled={generateReportMutation.isLoading}
+                        disabled={generateReportMutation.isPending}
                         data-testid="button-generate-report"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        {generateReportMutation.isLoading ? 'Generating...' : 'Generate PDF Report'}
+                        {generateReportMutation.isPending ? 'Generating...' : 'Generate PDF Report'}
                       </Button>
                     </form>
                   </CardContent>
@@ -280,8 +268,8 @@ export default function Reports() {
                             <td className="py-3 px-4"><Skeleton className="h-4 w-16" /></td>
                           </tr>
                         ))
-                      ) : reports?.length ? (
-                        reports.map((report) => (
+                      ) : reports && reports.length > 0 ? (
+                        reports.map((report: Report) => (
                           <tr key={report.id} className="border-b" data-testid={`row-report-${report.id}`}>
                             <td className="py-3 px-4" data-testid={`text-report-generated-${report.id}`}>
                               {new Date(report.generatedAt).toLocaleString()}

@@ -28,6 +28,7 @@ export interface IStorage {
   // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // User profile operations
@@ -85,6 +86,35 @@ export class DatabaseStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const allUsers = await db
+        .select()
+        .from(users)
+        .orderBy(users.firstName, users.lastName);
+      
+      // Get profiles for each user
+      const usersWithProfiles = await Promise.all(
+        allUsers.map(async (user) => {
+          const profile = await this.getUserProfile(user.id);
+          return {
+            ...user,
+            lastLogin: user.updatedAt,
+            isActive: true,
+            profile: profile ? {
+              role: profile.role as 'inspector' | 'admin'
+            } : { role: 'inspector' as const }
+          };
+        })
+      );
+      
+      return usersWithProfiles;
+    } catch (error) {
+      console.error("Error in getAllUsers:", error);
+      throw error;
+    }
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
@@ -207,9 +237,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateComponent(id: string, component: Partial<InsertWarehouseComponent>): Promise<WarehouseComponent> {
+    // Remove updatedAt from the component data as it's auto-managed by the database
+    const { updatedAt, ...updateData } = component as any;
+    
     const [updatedComponent] = await db
       .update(warehouseComponents)
-      .set({ ...component, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(warehouseComponents.id, id))
       .returning();
     return updatedComponent;

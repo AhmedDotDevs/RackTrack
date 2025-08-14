@@ -53,7 +53,7 @@ export default function Users() {
 
   // Check if user is admin
   useEffect(() => {
-    if (user && user.profile?.role !== 'admin') {
+    if (user && (user as any).profile?.role !== 'admin') {
       toast({
         title: "Access Denied",
         description: "Admin privileges required",
@@ -65,19 +65,7 @@ export default function Users() {
 
   const { data: users, isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ["/api/users"],
-    enabled: isAuthenticated && user?.profile?.role === 'admin',
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    }
+    enabled: isAuthenticated && (user as any)?.profile?.role === 'admin',
   });
 
   const handleAddUser = (e: React.FormEvent) => {
@@ -114,7 +102,7 @@ export default function Users() {
     );
   };
 
-  if (!isAuthenticated || user?.profile?.role !== 'admin') return null;
+  if (!isAuthenticated || (user as any)?.profile?.role !== 'admin') return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -244,8 +232,8 @@ export default function Users() {
                             <td className="py-3 px-4"><Skeleton className="h-4 w-16" /></td>
                           </tr>
                         ))
-                      ) : users?.length ? (
-                        users.map((user) => (
+                      ) : users && users.length > 0 ? (
+                        users.map((user: User) => (
                           <tr key={user.id} className="border-b" data-testid={`row-user-${user.id}`}>
                             <td className="py-3 px-4">
                               <div className="flex items-center">

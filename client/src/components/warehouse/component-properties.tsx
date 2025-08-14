@@ -36,9 +36,15 @@ export default function ComponentProperties({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const updatedComponent = {
-      ...component,
-      ...formData
+    const updateData = {
+      id: formData.id,
+      componentType: formData.componentType,
+      status: formData.status,
+      xPosition: component.xPosition,
+      yPosition: component.yPosition,
+      width: component.width,
+      height: component.height,
+      layoutId: component.layoutId
     };
     
     try {
@@ -49,16 +55,20 @@ export default function ComponentProperties({
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(updatedComponent),
+        body: JSON.stringify(updateData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update component');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update component');
       }
 
+      const updatedComponent = await response.json();
       onUpdate(updatedComponent);
+      alert('Component updated successfully!');
     } catch (error) {
       console.error('Error updating component:', error);
+      alert('Failed to update component: ' + (error as Error).message);
     }
   };
 

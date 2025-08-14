@@ -1,0 +1,115 @@
+You are to build a complete Warehouse Pallet Racking Inspection & Certification Management System using the following tech stack and constraints:
+
+Backend:
+
+Django (Python 3.12)
+
+PostgreSQL database
+
+Virtual environment using UV as Python package manager
+
+django-vite for asset bundling with Vite
+
+Tailwind CSS v4 (via Vite)
+
+django-htmx for server-driven interactivity
+
+django-allauth for authentication (email login, password reset, optional social logins)
+
+django-import-export for data import/export in admin
+
+django-unfold for a modern admin UI
+
+WeasyPrint for generating professional PDF reports with branding, layouts, and defect summaries
+
+Frontend:
+
+HTMX for partial updates and form submissions without page reloads
+
+Alpine.js (loaded from local /static/ file, not CDN) for client-side UI state toggles/modals
+
+Font Awesome Free icons (local, processed via Vite, no CDN)
+
+Konva.js for interactive warehouse layout drawing/editing (bays, racks, beams)
+
+CSV file format for importing layouts: each record contains component_id, type, x, y, width, height, status
+
+Core Features:
+
+User Roles & Permissions
+
+Inspectors (input inspection data)
+
+Admins (manage layouts, generate reports, configure system)
+
+Warehouse Layout Editor
+
+Draw racks and beams on a canvas (Konva.js)
+
+Save layout to DB with unique IDs for each component
+
+Import existing layout from CSV
+
+Export layout to CSV for backup/editing
+
+Inspection Process
+
+Click on components in layout to mark conditions (defect type, severity)
+
+Select defect from predefined list (damaged beam, bent upright, etc.) or custom entry
+
+Status auto-coloured based on urgency:
+
+Red = Immediate Threat (fix now)
+
+Amber = Fix within 4 weeks
+
+Green = Monitor
+
+Notifications & Reminders
+
+Automatic notification system for amber/red defects
+
+Send reminders X days before deadline (“Amber – fix before 2025-09-10”)
+
+Dashboard widget showing “Urgent items” and “Due soon”
+
+Report Generation
+
+Single-click PDF export via WeasyPrint
+
+Includes layout diagram with defect markers, full list, summary by urgency
+
+Data Management
+
+All inspection data stored in DB with history/versioning
+
+Ability to reload previous year’s layout for re-certification
+
+Requirements:
+
+Code must be modular, readable, and production-ready
+
+All JS libraries (Alpine, Font Awesome) must be loaded locally (no CDNs)
+
+HTMX must be integrated via django-htmx middleware and views, not raw script tags
+
+Layout editor must save and load data via HTMX calls for smooth UX
+
+Use Tailwind v4 classes for all styling
+
+Deliverables:
+
+Full Django project with configured Vite + Tailwind + HTMX + Alpine integration
+
+Base templates for layouts, forms, and modals
+
+Sample warehouse layout and inspection data for demo
+
+Admin interface configured with django-unfold and django-import-export
+
+Working notifications and reminder system
+
+Working PDF report export
+
+README with setup instructions for UV virtualenv, PostgreSQL, and Vite build process
